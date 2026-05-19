@@ -4,6 +4,7 @@
 	"name": "Rust",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/rust:2-1-bookworm",
+	"workspaceFolder": "/workspaces/hello-web",
 	"features": {
     	"ghcr.io/devcontainers/features/rust:1": {}
   	},
@@ -40,4 +41,3 @@
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
-}
