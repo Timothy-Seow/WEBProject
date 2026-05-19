@@ -1,4 +1,4 @@
-# Hello Web (Rust + Dev Container)
+# Web Project
 
 A minimal Rust web server using Actix Web, configured with a Dev Container for reproducible development.
 
