@@ -1,4 +1,3 @@
-<!-- Using this html to create a basic top bar for all pages. not working yet -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,17 +8,23 @@
 </head>
 <body>
 <div class="app-layout">
-
-  <!-- Header -->
+  
   <header class="app-header">
-    <div class="header-logo">LOGO<span>HERE</span></div>
+    <div class="header-logo">LOGO</div>
     <div class="header-spacer"></div>
     {% if logged_in %}
     <div class="header-user">
-      <div class="header-avatar">{{ session_full_name | truncate(length=1, end="") }}</div>
-      <span>{{ session_full_name }}</span>
+      <span>{{ session_name }}</span>
       <span class="header-badge">{{ session_role }}</span>
       <a href="/logout" class="header-logout">⎋ Logout</a>
     </div>
     {% endif %}
   </header>
+
+  <main class="app-main">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+</body>
+</html>
