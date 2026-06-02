@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
 // ----- ALL STRUCTS GO HERE -----
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -17,7 +18,7 @@ pub struct LoginInput {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, FromRow)]
 pub struct BankAccount {
     pub id: i64,
     pub account_number: String,
@@ -25,4 +26,12 @@ pub struct BankAccount {
     pub account_type: String, // savings / fixed deposit
     pub balance: f64,
     pub created_at: String,
+}
+
+#[derive(Serialize, FromRow)]
+pub struct Transaction {
+    pub id: i32,
+    pub date: String,
+    pub description: String,
+    pub amount: f64,
 }

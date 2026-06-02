@@ -2,19 +2,20 @@ use actix_files as fs;
 use actix_session::{storage::CookieSessionStore, Session, SessionMiddleware};
 use actix_web::{cookie::Key, middleware, web, App, HttpResponse, HttpServer, Responder};
 use bcrypt::verify;
-use rusqlite::{params, Connection};
-use std::sync::Mutex;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::SqlitePool;
 use tera::{Context, Tera};
 
 mod db;
 mod models;
-use db::{get_user_accounts, init_db};
+mod handlers;
+use db::{get_user_accounts, get_user_by_username, init_db};
 use models::LoginInput;
 
 
 // app state for db and html
 pub struct AppState {
-    pub db: Mutex<Connection>,
+    pub db: SqlitePool,
     pub tera: Tera,
 }
 
@@ -68,16 +69,9 @@ async fn login_post(
     session: Session,
     form: web::Form<LoginInput>,
 ) -> impl Responder {
-    let conn = data.db.lock().unwrap();
-    let result = conn.query_row(
-        "SELECT id,username,password_hash,role,name FROM users WHERE username=?1",
-        params![form.username],
-        |r| Ok((r.get::<_,i64>(0)?, r.get::<_,String>(1)?, r.get::<_,String>(2)?,
-                 r.get::<_,String>(3)?, r.get::<_,String>(4)?)),
-    );
-    drop(conn);
+    let result = get_user_by_username(&data.db, &form.username).await;
     match result {
-        Ok((id, username, hash_val, role, name)) => {
+        Ok(Some((id, username, hash_val, role, name))) => {
             if verify(&form.password, &hash_val).unwrap() {
                 session.insert("user_id", id).ok();
                 session.insert("username", &username).ok();
@@ -88,7 +82,7 @@ async fn login_post(
                 render_login_error(&data, "Invalid username or password.")
             }
         }
-        Err(_) => render_login_error(&data, "Invalid username or password."),
+        _ => render_login_error(&data, "Invalid username or password."),
     }
 }
 
@@ -117,15 +111,18 @@ async fn dashboard(
     }
 
     let role    = session.get::<String>("role").ok().flatten().unwrap_or_default();
-    let conn    = data.db.lock().unwrap();
 
     if role == "admin" {
-         let total_accounts = conn.query_row("SELECT COUNT(*) FROM bank_accounts", [], |r| r.get(0)).unwrap_or(0);
+         let total_accounts: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM bank_accounts")
+             .fetch_one(&data.db)
+             .await
+             .unwrap_or(0);
          ctx.insert("total_accounts", &total_accounts);
          ctx.insert("is_admin", &true);
     } else {
         // customer dash
-        let accounts = get_user_accounts(&conn, session.get::<i64>("user_id").unwrap().unwrap());
+        let user_id = session.get::<i64>("user_id").ok().flatten().unwrap_or_default();
+        let accounts = get_user_accounts(&data.db, user_id).await.unwrap_or_default();
         ctx.insert("accounts", &accounts);
         ctx.insert("is_admin", &false);
     }
@@ -145,13 +142,16 @@ async fn root(session: Session) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let conn = Connection::open("bank.db").expect("Failed to open database");
-    init_db(&conn);
+    let db = SqlitePoolOptions::new()
+        .connect("sqlite://bank.db")
+        .await
+        .expect("Failed to open database");
+    init_db(&db).await.expect("Failed to initialize database");
 
     let tera = Tera::new("templates/**/*").expect("Failed to load templates");
     let secret_key = Key::generate(); // for encrypting session cookies
     let app_state = web::Data::new(AppState {
-        db: Mutex::new(conn),
+        db,
         tera,
     });
 
@@ -174,6 +174,8 @@ async fn main() -> std::io::Result<()> {
         .route("/logout", web::get().to(logout))
         // Dashboard
         .route("/dashboard", web::get().to(dashboard))
+        // Transactions
+        .service(handlers::list_transactions)
 
     })
     .bind(("127.0.0.1", 9876))?
