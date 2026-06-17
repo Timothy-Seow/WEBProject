@@ -15,68 +15,104 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
-
+/*
+body { 
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+*/
 .app-layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #0f172a;
+}
 
-/* ------- Header -------- */
-.app-header {
-    display: flex;
-    align-items: center;
-    height: 64px;
-    padding: 0 32px;
-    background-color: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+header {
+  width: 100%;
 }
-.header-logo {
-    font-weight: 700;
-    font-size: 1.2rem;
-    letter-spacing: -0.025em;
-    color: var(--text-primary);
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  background-color: #1e293b;
+  padding: 0.75rem 2rem;
+  color: #fff;
+  gap: 1.5rem;
 }
-.header-spacer {
-    flex: 1; /* Pushes the user profile content to the absolute right side */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.2rem;
 }
-/* User Profile Container */
-.header-user {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+
+.nav-links {
+  list-style: none;
+  display: flex;          /* horizontal row */
+  gap: 2rem;              /* spacing between links */
+  margin: 0;
+  padding: 0;
 }
-.header-user span:first-child {
-    font-weight: 500;
-    font-size: 0.95rem;
+
+.nav-links a {
+  text-decoration: none;
+  color: #e2e8f0;
+  transition: color 0.3s ease;
 }
-/* Role Badges (Admin / Customer) */
-.header-badge {
-    background-color: #e0f2fe;
-    color: #0369a1;
-    padding: 4px 10px;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+
+.nav-links a.active,
+.nav-links a:hover {
+  color: #38bdf8;
+  font-weight: 500;
 }
-/* Logout Button Link */
-.header-logout {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: all 0.1s;
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;              /* spacing between items */
+  margin-left: auto;
 }
-.header-logout:hover {
-    color: #ef4444; /* Alert red on hover */
-    background-color: #fef2f2;
+
+.customer-tag {
+  background-color: #38bdf8;
+  color: #0f172a;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* logout button */
+.logout-btn {
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.logout-btn:hover {
+  color: #38bdf8;
+}
+
+
 /* Main content under header (for all pages)*/
 .app-main {
   padding: 26px;
@@ -124,6 +160,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .btn-primary:hover {
     background-color: #0052a3;
 }
+
 /* Accent color when typing */
 .form-group input:focus {
     outline: none;
@@ -138,6 +175,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     background-color: #f4f6f9;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
 /* Turn the login area into card */
 .login-card {
     width: 100%;

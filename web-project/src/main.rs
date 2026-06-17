@@ -7,10 +7,18 @@ use sqlx::SqlitePool;
 use tera::{Context, Tera};
 
 mod db;
-mod models;
-mod handlers;
+
+#[path = "models/user.rs"]
+mod user;
+
+#[path = "models/transactions.rs"]
+mod models_transactions;
+
+#[path = "handlers/transactions.rs"]
+mod transaction_handler;
+
 use db::{get_user_accounts, get_user_by_username, init_db};
-use models::LoginInput;
+use user::LoginInput;
 
 
 // app state for db and html
@@ -175,7 +183,7 @@ async fn main() -> std::io::Result<()> {
         // Dashboard
         .route("/dashboard", web::get().to(dashboard))
         // Transactions
-        .service(handlers::list_transactions)
+        .service(transaction_handler::list_transactions)
 
     })
     .bind(("127.0.0.1", 9876))?

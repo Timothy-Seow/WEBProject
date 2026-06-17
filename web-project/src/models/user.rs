@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-
 // ----- ALL STRUCTS GO HERE -----
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
@@ -28,10 +27,3 @@ pub struct BankAccount {
     pub created_at: String,
 }
 
-#[derive(Serialize, FromRow)]
-pub struct Transaction {
-    pub id: i32,
-    pub date: String,
-    pub description: String,
-    pub amount: f64,
-}

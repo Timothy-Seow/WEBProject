@@ -1,7 +1,7 @@
 use actix_session::Session;
 use actix_web::{get, web, Responder, HttpResponse};
 use tera::Context;
-use crate::{AppState, models::Transaction};
+use crate::{AppState, models_transactions::Transaction};
 
 fn add_user_to_ctx(session: &Session, ctx: &mut Context) -> bool {
     let id = session.get::<i64>("user_id").ok().flatten();

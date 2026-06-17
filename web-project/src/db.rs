@@ -1,6 +1,6 @@
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::Local;
-use crate::models::BankAccount;
+use crate::user::BankAccount;
 use rand::Rng;
 use sqlx::sqlite::SqlitePool;
 use sqlx::{Executor, Row};
