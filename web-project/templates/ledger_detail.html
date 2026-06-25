@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ account.code }} {{ account.name }}</h1>
+    <p>
+      {{ account.account_type }} account.
+      Normal balance: {{ account.normal_balance }}.
+    </p>
+  </div>
+
+  <a href="/ledger" class="btn btn-secondary">Back to Ledger</a>
+</div>
+
+<form method="GET" action="/ledger/{{ account.id }}" class="filter-form">
+  <div class="form-group"><label>From</label><input type="date" name="start_date" value="{{ start_date }}"></div>
+  <div class="form-group"><label>To</label><input type="date" name="end_date" value="{{ end_date }}"></div>
+  <div class="form-actions"><button type="submit" class="btn btn-primary">Filter</button><a href="/ledger/{{ account.id }}" class="btn btn-secondary">Clear</a></div>
+</form>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Entry</th>
+        <th>Date</th>
+        <th>Memo</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Running Balance</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% if start_date %}
+      <tr class="entry-total-row">
+        <td colspan="5">Opening Balance Before {{ start_date }}</td>
+        <td>{{ opening_balance_side }} {{ opening_balance }}</td>
+      </tr>
+      {% endif %}
+      {% for line in lines %}
+      <tr>
+        <td>{{ line.entry_no }}</td>
+        <td>{{ line.entry_date }}</td>
+        <td>{{ line.memo }}</td>
+        <td>{{ line.debit_display }}</td>
+        <td>{{ line.credit_display }}</td>
+        <td>{{ line.running_balance_side }} {{ line.running_balance }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -18,16 +18,26 @@
 
       <ul class="nav-links">
         <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/transactions" class="active">Transactions</a></li>
+        <li><a href="/accounts">Accounts</a></li>
+        <li><a href="/journal">Journal</a></li>
+        <li><a href="/ledger">Ledger</a></li>
+        <li><a href="/reports/profit-loss">Profit &amp; Loss</a></li>
+        <li><a href="/reports/balance-sheet">Balance Sheet</a></li>
+        <li><a href="/expenses">Expenses</a></li>
+        <li><a href="/customers">Customers</a></li>
+        <li><a href="/invoices">Invoices</a></li>
+        {% if is_admin %}
+        <li><a href="/audit">Audit Trail</a></li>
+        {% endif %}
       </ul>
 
       <div class="nav-right">
-        <span class="customer-tag">CUSTOMER</span>
+        <span class="customer-tag">{{session_role}}</span>
         <div class="user-info">
-          <span class="user-name">John Doe</span>
+          <span class="user-name">{{session_name}}</span>
           <span class="user-icon">👤</span>
         </div>
-        <button class="logout-btn">⏻</button>
+        <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </nav>
   </header>

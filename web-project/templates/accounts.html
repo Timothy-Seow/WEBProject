@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Chart of Accounts</h1>
+    <p>Manage the accounts used for invoices, expenses, payments, and reports.</p>
+  </div>
+  {% if is_admin %}
+  <a href="/accounts/new" class="btn btn-primary">New Account</a>
+  {% endif %}
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Normal Balance</th>
+        <th>Status</th>
+        {% if is_admin %}
+        <th>Actions</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for account in accounts %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.account_type }}</td>
+        <td>{{ account.normal_balance }}</td>
+        <td>
+          {% if account.is_active %}
+          <span class="status-badge status-active">Active</span>
+          {% else %}
+          <span class="status-badge status-inactive">Inactive</span>
+          {% endif %}
+        </td>
+        {% if is_admin %}
+        <td>
+          <div class="inline-actions">
+            <a href="/accounts/{{ account.id }}/edit" class="btn btn-secondary btn-small">Edit</a>
+            {% if account.is_active %}
+            <form method="POST" action="/accounts/{{ account.id }}/deactivate">
+              <button type="submit" class="btn btn-danger btn-small">Deactivate</button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

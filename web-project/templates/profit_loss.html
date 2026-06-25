@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Profit and Loss</h1>
+    <p>All-time Revenue, Expenses, and business result.</p>
+  </div>
+</div>
+
+<form method="GET" action="/reports/profit-loss" class="filter-form">
+  <div class="form-group">
+    <label>From</label>
+    <input type="date" name="start_date" value="{{ start_date }}">
+  </div>
+
+  <div class="form-group">
+    <label>To</label>
+    <input type="date" name="end_date" value="{{ end_date }}">
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="/reports/profit-loss" class="btn btn-secondary">Clear</a>
+  </div>
+</form>
+
+<div class="summary-row">
+  <div class="summary-card">
+    <span>Total Revenue</span>
+    <strong>{{ total_revenue }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Total Expenses</span>
+    <strong>{{ total_expenses }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>{{ result_label }}</span>
+    {% if result_label == "Net Profit" %}
+    <strong class="text-success">{{ result_amount }}</strong>
+    {% else %}
+    <strong class="text-danger">{{ result_amount }}</strong>
+    {% endif %}
+  </div>
+</div>
+
+<div class="table-card">
+  <h2>Revenue</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in revenues %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.amount }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h2>Expenses</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in expenses %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.amount }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

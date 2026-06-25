@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>General Ledger</h1>
+    <p>Review the debit, credit, and current balance of each account.</p>
+  </div>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Type</th>
+        <th>Total Debit</th>
+        <th>Total Credit</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in accounts %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td><a href="/ledger/{{ account.id }}">{{ account.name }}</a></td>
+        <td>{{ account.account_type }}</td>
+        <td>{{ account.debit_total }}</td>
+        <td>{{ account.credit_total }}</td>
+        <td>{{ account.balance_side }} {{ account.balance }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Expenses</h1>
+    <p>Record business costs and review their automatic journal entries.</p>
+  </div>
+
+  {% if can_create_records %}
+  <a href="/expenses/new" class="btn btn-primary">New Expense</a>
+  {% endif %}
+</div>
+
+<form method="GET" action="/expenses" class="filter-form">
+  <div class="form-group"><label>From</label><input type="date" name="start_date" value="{{ start_date }}"></div>
+  <div class="form-group"><label>To</label><input type="date" name="end_date" value="{{ end_date }}"></div>
+  <div class="form-actions"><button type="submit" class="btn btn-primary">Filter</button><a href="/expenses" class="btn btn-secondary">Clear</a></div>
+</form>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Expense Account</th>
+        <th>Paid From</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for expense in expenses %}
+      <tr>
+        <td>{{ expense.expense_date }}</td>
+        <td>{{ expense.description }}</td>
+        <td>{{ expense.expense_account }}</td>
+        <td>{{ expense.payment_account }}</td>
+        <td>{{ expense.amount_display }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

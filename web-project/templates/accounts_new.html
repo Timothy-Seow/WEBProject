@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>New Chart Account</h1>
+    <p>Create an account using standard accounting code ranges.</p>
+  </div>
+  <a href="/accounts" class="btn btn-secondary">Back</a>
+</div>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="form-card">
+  <form method="POST" action="/accounts" class="stacked-form">
+    <div class="form-group">
+      <label>Code</label>
+      <input type="text" name="code" pattern="[1-5][0-9]{3}" title="Use 1000-5999 account code ranges" required>
+      <small>1xxx Asset, 2xxx Liability, 3xxx Equity, 4xxx Revenue, 5xxx Expense.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" name="name" required>
+    </div>
+
+    <div class="form-group">
+      <label>Account Type</label>
+      <select name="account_type" required>
+        <option value="Asset">Asset</option>
+        <option value="Liability">Liability</option>
+        <option value="Equity">Equity</option>
+        <option value="Revenue">Revenue</option>
+        <option value="Expense">Expense</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Normal Balance</label>
+      <select name="normal_balance" required>
+        <option value="Debit">Debit</option>
+        <option value="Credit">Credit</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create Account</button>
+      <a href="/accounts" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

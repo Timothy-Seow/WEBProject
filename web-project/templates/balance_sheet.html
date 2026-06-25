@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Balance Sheet</h1>
+    <p>Assets, Liabilities, and Equity as at the end of {{ selected_month }}.</p>
+  </div>
+</div>
+
+<form method="GET" action="/reports/balance-sheet" class="filter-form">
+  <div class="form-group">
+    <label>Month</label>
+    <input type="month" name="month" value="{{ selected_month }}" max="{{ current_month }}">
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Generate</button>
+    <a href="/reports/balance-sheet" class="btn btn-secondary">Current Month</a>
+  </div>
+</form>
+
+<div class="summary-row">
+  <div class="summary-card">
+    <span>Total Assets</span>
+    <strong>{{ total_assets }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Total Liabilities and Equity</span>
+    <strong>{{ total_liabilities_and_equity }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Status</span>
+    {% if is_balanced %}
+    <strong class="text-success">Balanced</strong>
+    {% else %}
+    <strong class="text-danger">Out of Balance</strong>
+    {% endif %}
+  </div>
+</div>
+
+<div class="table-card">
+  <h2>Assets</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in assets %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.amount }}</td>
+      </tr>
+      {% endfor %}
+
+      <tr class="entry-total-row">
+        <td colspan="2">Total Assets</td>
+        <td>{{ total_assets }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h2>Liabilities</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in liabilities %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.amount }}</td>
+      </tr>
+      {% endfor %}
+
+      <tr class="entry-total-row">
+        <td colspan="2">Total Liabilities</td>
+        <td>{{ total_liabilities }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h2>Equity</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for account in equity %}
+      <tr>
+        <td>{{ account.code }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.amount }}</td>
+      </tr>
+      {% endfor %}
+
+      <tr>
+        <td></td>
+        <td>{{ result_label }}</td>
+        {% if result_label == "Current Profit" %}
+        <td class="text-success">{{ result_amount }}</td>
+        {% else %}
+        <td class="text-danger">{{ result_amount }}</td>
+        {% endif %}
+      </tr>
+
+      <tr class="entry-total-row">
+        <td colspan="2">Total Equity</td>
+        <td>{{ total_equity }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

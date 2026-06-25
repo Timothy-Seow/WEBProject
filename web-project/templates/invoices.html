@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Invoices</h1>
+    <p>Track customer invoices and outstanding payment status.</p>
+  </div>
+
+  {% if can_create_records %}
+  <div style="display: flex; gap: 15px;">
+    <a href="/invoices/new" class="btn btn-primary">New Invoice</a>
+    <a href="/payments/new" class="btn btn-primary">New Payment</a>
+  </div>
+  {% endif %}
+</div>
+
+<form method="GET" action="/invoices" class="filter-form">
+  <div class="form-group"><label>From</label><input type="date" name="start_date" value="{{ start_date }}"></div>
+  <div class="form-group"><label>To</label><input type="date" name="end_date" value="{{ end_date }}"></div>
+  <div class="form-actions"><button type="submit" class="btn btn-primary">Filter</button><a href="/invoices" class="btn btn-secondary">Clear</a></div>
+</form>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Invoice</th>
+        <th>Customer</th>
+        <th>Invoice Date</th>
+        <th>Due Date</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Paid</th>
+        <th>Balance Due</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for invoice in invoices %}
+      <tr>
+        <td>{{ invoice.invoice_no }}</td>
+        <td>{{ invoice.customer_name }}</td>
+        <td>{{ invoice.invoice_date }}</td>
+        <td>{{ invoice.due_date }}</td>
+        <td>{{ invoice.description }}</td>
+        <td>{{ invoice.amount_display }}</td>
+        <td>{{ invoice.paid_display }}</td>
+        <td>{{ invoice.balance_display }}</td>
+        <td>{{ invoice.status }}</td>
+        <td>
+          <a href="/invoices/{{ invoice.id }}/pdf" class="btn btn-secondary btn-small">
+            Download PDF
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

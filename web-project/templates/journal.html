@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Journal Entries</h1>
+    <p>Review posted double-entry accounting records.</p>
+    {% if can_create_records %}
+    <a href="/journal/new" class="btn btn-primary">New Entry</a>
+    {% endif %}
+  </div>
+</div>
+
+<form method="GET" action="/journal" class="filter-form">
+  <div class="form-group"><label>From</label><input type="date" name="start_date" value="{{ start_date }}"></div>
+  <div class="form-group"><label>To</label><input type="date" name="end_date" value="{{ end_date }}"></div>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="/journal" class="btn btn-secondary">Clear</a>
+  </div>
+</form>
+
+<div class="summary-row">
+  <div class="summary-card">
+    <span>Total Debits</span>
+    <strong>{{ total_debits }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Total Credits</span>
+    <strong>{{ total_credits }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Status</span>
+    {% if is_balanced %}
+    <strong class="text-success">Balanced</strong>
+    {% else %}
+    <strong class="text-danger">Out of Balance</strong>
+    {% endif %}
+  </div>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Entry</th>
+        <th>Date</th>
+        <th>Memo</th>
+        <th>Account</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in entries %}
+        {% for line in lines %}
+          {% if line.journal_entry_id == entry.id %}
+          <tr>
+            <td>{{ entry.entry_no }}</td>
+            <td>{{ entry.entry_date }}</td>
+            <td>{{ entry.memo }}</td>
+            <td>{{ line.account_code }} {{ line.account_name }}</td>
+            <td>{{ line.debit_display }}</td>
+            <td>{{ line.credit_display }}</td>
+            <td></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+            <tr class="entry-total-row">
+            <td colspan="4">Entry Total</td>
+            <td>{{ entry.debit_total }}</td>
+            <td>{{ entry.credit_total }}</td>
+            <td>
+                {% if entry.is_balanced %}
+                <span class="text-success">Balanced</span>
+                {% else %}
+                <span class="text-danger">Out of Balance</span>
+                {% endif %}
+            </td>
+            </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

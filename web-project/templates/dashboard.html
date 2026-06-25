@@ -9,22 +9,37 @@
 </div>
 
 {% if is_admin %}
-<!--Admin Dash-->
 
-<div>
-  <h1>Current total accounts: {{ total_accounts }}</h1>
+<div class="summary-row">
+  <div class="summary-card">
+    <span>Cash Balance</span>
+    <strong>{{ cash_balance }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Outstanding Receivables</span>
+    <strong>{{ outstanding_receivables }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>Open Invoices</span>
+    <strong>{{ unpaid_invoices }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>This Month's Revenue</span>
+    <strong class="text-success">{{ monthly_revenue }}</strong>
+  </div>
+
+  <div class="summary-card">
+    <span>This Month's Expenses</span>
+    <strong class="text-danger">{{ monthly_expenses }}</strong>
+  </div>
 </div>
 
 {% else %}
-<!-- Customer Dash -->
-<div>
-  {% for acc in accounts %}
-  <div class="account-card" style="cursor:pointer;transition:border-color .2s">
-    <div class="account-type">{{ acc.account_type }} Account</div>
-    <div class="account-balance">{{ acc.balance }}</div>
-    <div class="account-number">Account Number: {{ acc.account_number }}</div>
-  </div>
-  {% endfor %}
+<div class="table-card">
+  <p>Read-only accounting access is enabled for this user.</p>
 </div>
 
 {% endif %}
