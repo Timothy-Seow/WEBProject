@@ -157,7 +157,7 @@ async fn logout(session: Session) -> impl Responder {
     redirect("/login")
 }
 
-// DASHBOARD (not finished, got a lot of stuff to add)
+// DASHBOARD 
 async fn dashboard(data: web::Data<AppState>, session: Session) -> impl Responder {
     let mut ctx = Context::new();
     if !add_user_to_ctx(&session, &mut ctx) {
@@ -271,7 +271,7 @@ async fn root(session: Session) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let db = SqlitePoolOptions::new()
-        .connect("sqlite://bank.db")
+        .connect("sqlite://accounting.db")
         .await
         .expect("Failed to open database");
     init_db(&db).await.expect("Failed to initialize database");
