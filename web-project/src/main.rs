@@ -276,7 +276,12 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to open database");
     init_db(&db).await.expect("Failed to initialize database");
 
-    let tera = Tera::new("templates/**/*").expect("Failed to load templates");
+    // Anchored to the crate's own folder (not the process's current working
+    // directory) so the app finds templates/static the same way no matter
+    // where `cargo run` / the .exe is launched from (fixes "works on my
+    // machine but not my teammate's" path issues across OSes).
+    let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*"))
+        .expect("Failed to load templates");
     let secret_key = Key::generate(); // for encrypting session cookies
     let app_state = web::Data::new(AppState { db, tera });
 
@@ -289,8 +294,11 @@ async fn main() -> std::io::Result<()> {
                     .build(),
             )
             .wrap(middleware::Logger::default())
-            // Static files
-            .service(fs::Files::new("/static", "./static").show_files_listing())
+            // Static files (absolute path, see comment on Tera::new above)
+            .service(
+                fs::Files::new("/static", concat!(env!("CARGO_MANIFEST_DIR"), "/static"))
+                    .show_files_listing(),
+            )
             // Root
             .route("/", web::get().to(root))
             // Login/logout
