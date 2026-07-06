@@ -5,7 +5,7 @@ use tera::Context;
 use crate::{
     AppState,
     audit_log::AuditLog,
-    helpers::{add_user_to_ctx, has_role},
+    helpers::{add_user_to_ctx, is_admin_or_sysadmin},
 };
 
 // Shows recent important actions to administrators.
@@ -19,7 +19,7 @@ pub async fn list_audit_logs(state: web::Data<AppState>, session: Session) -> im
             .finish();
     }
 
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/dashboard"))
             .finish();

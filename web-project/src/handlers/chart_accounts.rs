@@ -2,7 +2,7 @@ use crate::{
     AppState,
     audit::record_audit_event,
     chart_account::{ChartAccount, ChartAccountInput},
-    helpers::{add_user_to_ctx, has_role},
+    helpers::{add_user_to_ctx, is_admin_or_sysadmin},
 };
 use actix_session::Session;
 use actix_web::{HttpResponse, Responder, get, post, web};
@@ -113,7 +113,7 @@ pub async fn new_chart_account_form(
             .finish();
     }
 
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/accounts"))
             .finish();
@@ -137,7 +137,7 @@ pub async fn create_chart_account(
             .finish();
     }
 
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/accounts"))
             .finish();
@@ -226,7 +226,7 @@ pub async fn edit_chart_account_form(
             .append_header(("Location", "/login"))
             .finish();
     }
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/accounts"))
             .finish();
@@ -269,7 +269,7 @@ pub async fn update_chart_account(
             .append_header(("Location", "/login"))
             .finish();
     }
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/accounts"))
             .finish();
@@ -378,7 +378,7 @@ pub async fn deactivate_chart_account(
             .append_header(("Location", "/login"))
             .finish();
     }
-    if !has_role(&session, "admin") {
+    if !is_admin_or_sysadmin(&session) {
         return HttpResponse::Found()
             .append_header(("Location", "/accounts"))
             .finish();

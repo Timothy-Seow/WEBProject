@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>User Accounts</h1>
+    <p>System Administrator only: view every account, create new users, reassign roles, and remove accounts.</p>
+  </div>
+
+  <a href="/admin/users/new" class="btn btn-primary">New User</a>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td><span class="status-badge status-active">{{ user.role }}</span></td>
+        <td>{{ user.created_at }}</td>
+        <td>
+          <div class="inline-actions">
+            {% if current_user_id == user.id %}
+            <span>You</span>
+            {% else %}
+            <form method="POST" action="/admin/users/{{ user.id }}/role" class="inline-actions">
+              <select name="role">
+                {% for role in roles %}
+                <option value="{{ role }}" {% if role == user.role %}selected{% endif %}>{{ role }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-secondary btn-small">Reassign</button>
+            </form>
+            <form method="POST" action="/admin/users/{{ user.id }}/delete" onsubmit="return confirm('Delete user {{ user.username }}?');">
+              <button type="submit" class="btn btn-danger btn-small">Delete</button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -81,6 +81,12 @@ mod audit_log;
 #[path = "handlers/audit_trail.rs"]
 mod audit_trail_handler;
 
+#[path = "models/user_admin.rs"]
+mod user_admin;
+
+#[path = "handlers/user_admin.rs"]
+mod user_admin_handler;
+
 use db::{get_user_by_username, init_db};
 use helpers::{add_user_to_ctx, format_cents};
 use user::LoginInput;
@@ -170,7 +176,7 @@ async fn dashboard(data: web::Data<AppState>, session: Session) -> impl Responde
         .flatten()
         .unwrap_or_default();
 
-    if role == "admin" {
+    if role == "admin" || role == "sysadmin" {
         let cash_debits: i64 = sqlx::query_scalar(
             "SELECT COALESCE(SUM(jl.debit_cents), 0)
              FROM journal_lines jl
@@ -344,6 +350,12 @@ async fn main() -> std::io::Result<()> {
             .service(customer_payment_handler::create_payment)
             // Audit trail page
             .service(audit_trail_handler::list_audit_logs)
+            // User account management (System Administrator only)
+            .service(user_admin_handler::list_users)
+            .service(user_admin_handler::new_user_form)
+            .service(user_admin_handler::create_user)
+            .service(user_admin_handler::update_user_role)
+            .service(user_admin_handler::delete_user)
     })
     .bind(("127.0.0.1", 9876))?
     .run()
