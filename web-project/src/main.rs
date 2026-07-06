@@ -176,7 +176,7 @@ async fn dashboard(data: web::Data<AppState>, session: Session) -> impl Responde
         .flatten()
         .unwrap_or_default();
 
-    if role == "admin" || role == "sysadmin" {
+    if role == "admin" {
         let cash_debits: i64 = sqlx::query_scalar(
             "SELECT COALESCE(SUM(jl.debit_cents), 0)
              FROM journal_lines jl

@@ -72,9 +72,7 @@ pub(crate) fn add_user_to_ctx(session: &Session, ctx: &mut Context) -> bool {
     let name = session.get::<String>("name").ok().flatten();
 
     if let (Some(_), Some(username), Some(role), Some(name)) = (id, username, role, name) {
-        let is_sysadmin = role == "sysadmin";
-        // System Administrator is a super-admin: it inherits every normal admin permission.
-        let is_admin = role == "admin" || is_sysadmin;
+        let is_admin = role == "admin";
         let can_create_records = is_admin || role == "accountant";
 
         ctx.insert("logged_in", &true);
@@ -82,7 +80,6 @@ pub(crate) fn add_user_to_ctx(session: &Session, ctx: &mut Context) -> bool {
         ctx.insert("session_role", &role);
         ctx.insert("session_name", &name);
         ctx.insert("is_admin", &is_admin);
-        ctx.insert("is_sysadmin", &is_sysadmin);
         ctx.insert("can_create_records", &can_create_records);
         true
     } else {
@@ -106,21 +103,16 @@ pub(crate) fn can_create_accounting_records(session: &Session) -> bool {
         .get::<String>("role")
         .ok()
         .flatten()
-        .is_some_and(|role| role == "admin" || role == "accountant" || role == "sysadmin")
+        .is_some_and(|role| role == "admin" || role == "accountant")
 }
 
-// Returns true for the "admin" role and the super-admin "sysadmin" role.
-pub(crate) fn is_admin_or_sysadmin(session: &Session) -> bool {
+// Returns true for the "admin" role. Used to gate user management
+// (listing, creating, deleting, and reassigning roles) as well as
+// general admin-only functionality.
+pub(crate) fn is_admin(session: &Session) -> bool {
     session
         .get::<String>("role")
         .ok()
         .flatten()
-        .is_some_and(|role| role == "admin" || role == "sysadmin")
-}
-
-// Returns true only for the System Administrator role. Used to gate user
-// management (listing, creating, deleting, and reassigning roles) so that
-// normal admins cannot manage accounts.
-pub(crate) fn is_sysadmin(session: &Session) -> bool {
-    has_role(session, "sysadmin")
+        .is_some_and(|role| role == "admin")
 }

@@ -33,18 +33,6 @@ pub async fn init_db(pool: &SqlitePool) -> Result<(), sqlx::Error> {
     )
     .await?;
 
-    // Development-only System Administrator account. Only this role can
-    // manage user accounts (create, delete, reassign roles).
-    seed_demo_user(
-        pool,
-        "sysadmin",
-        "sysadmin123",
-        "sysadmin@example.com",
-        "Demo System Administrator",
-        "sysadmin",
-    )
-    .await?;
-
     // Development-only users for checking accountant and viewer permissions.
     seed_demo_user(
         pool,

@@ -6,15 +6,15 @@ use tera::Context;
 use crate::{
     AppState,
     audit::record_audit_event,
-    helpers::{add_user_to_ctx, is_sysadmin},
+    helpers::{add_user_to_ctx, is_admin},
     user_admin::{NewUserInput, RoleInput, UserAccount, is_valid_role},
 };
 
 // Redirects anyone who isn't logged in, or isn't the System Administrator,
 // away from every route in this file. Even normal "admin" accounts are
-// blocked here on purpose: only "sysadmin" may view, create, delete, or
+// blocked here on purpose: only "admin" may view, create, delete, or
 // reassign roles for user accounts.
-fn require_sysadmin(session: &Session, ctx: &mut Context) -> Option<HttpResponse> {
+fn require_admin(session: &Session, ctx: &mut Context) -> Option<HttpResponse> {
     if !add_user_to_ctx(session, ctx) {
         return Some(
             HttpResponse::Found()
@@ -23,7 +23,7 @@ fn require_sysadmin(session: &Session, ctx: &mut Context) -> Option<HttpResponse
         );
     }
 
-    if !is_sysadmin(session) {
+    if !is_admin(session) {
         return Some(
             HttpResponse::Found()
                 .append_header(("Location", "/dashboard"))
@@ -38,7 +38,7 @@ fn require_sysadmin(session: &Session, ctx: &mut Context) -> Option<HttpResponse
 // Lists every user account and its assigned role.
 pub async fn list_users(state: web::Data<AppState>, session: Session) -> impl Responder {
     let mut ctx = Context::new();
-    if let Some(response) = require_sysadmin(&session, &mut ctx) {
+    if let Some(response) = require_admin(&session, &mut ctx) {
         return response;
     }
 
@@ -55,7 +55,7 @@ pub async fn list_users(state: web::Data<AppState>, session: Session) -> impl Re
 
     ctx.insert("users", &users);
     ctx.insert("current_user_id", &current_user_id);
-    ctx.insert("roles", &["sysadmin", "admin", "accountant", "viewer"]);
+    ctx.insert("roles", &["admin", "accountant", "viewer"]);
 
     let rendered = state.tera.render("users.html", &ctx).unwrap();
     HttpResponse::Ok().content_type("text/html").body(rendered)
@@ -65,11 +65,11 @@ pub async fn list_users(state: web::Data<AppState>, session: Session) -> impl Re
 // Displays the form for creating a new user account.
 pub async fn new_user_form(state: web::Data<AppState>, session: Session) -> impl Responder {
     let mut ctx = Context::new();
-    if let Some(response) = require_sysadmin(&session, &mut ctx) {
+    if let Some(response) = require_admin(&session, &mut ctx) {
         return response;
     }
 
-    ctx.insert("roles", &["sysadmin", "admin", "accountant", "viewer"]);
+    ctx.insert("roles", &["admin", "accountant", "viewer"]);
 
     let rendered = state.tera.render("users_new.html", &ctx).unwrap();
     HttpResponse::Ok().content_type("text/html").body(rendered)
@@ -83,10 +83,10 @@ pub async fn create_user(
     form: web::Form<NewUserInput>,
 ) -> impl Responder {
     let mut ctx = Context::new();
-    if let Some(response) = require_sysadmin(&session, &mut ctx) {
+    if let Some(response) = require_admin(&session, &mut ctx) {
         return response;
     }
-    ctx.insert("roles", &["sysadmin", "admin", "accountant", "viewer"]);
+    ctx.insert("roles", &["admin", "accountant", "viewer"]);
 
     let username = form.username.trim();
     let email = form.email.trim();
@@ -179,7 +179,7 @@ pub async fn update_user_role(
     form: web::Form<RoleInput>,
 ) -> impl Responder {
     let mut ctx = Context::new();
-    if let Some(response) = require_sysadmin(&session, &mut ctx) {
+    if let Some(response) = require_admin(&session, &mut ctx) {
         return response;
     }
 
@@ -192,8 +192,8 @@ pub async fn update_user_role(
             .finish();
     }
 
-    // A System Administrator can't demote themselves this way, which would
-    // otherwise be able to lock every sysadmin out of this page.
+    // An Administrator can't demote themselves this way, which would
+    // otherwise be able to lock every admin out of this page.
     let current_user_id = session.get::<i64>("user_id").ok().flatten();
     if current_user_id == Some(user_id) {
         return HttpResponse::Found()
@@ -267,7 +267,7 @@ pub async fn delete_user(
     path: web::Path<i64>,
 ) -> impl Responder {
     let mut ctx = Context::new();
-    if let Some(response) = require_sysadmin(&session, &mut ctx) {
+    if let Some(response) = require_admin(&session, &mut ctx) {
         return response;
     }
 

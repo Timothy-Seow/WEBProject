@@ -31,7 +31,7 @@ pub struct RoleInput {
 }
 
 // Every role the System Administrator is allowed to assign.
-pub const ASSIGNABLE_ROLES: [&str; 4] = ["sysadmin", "admin", "accountant", "viewer"];
+pub const ASSIGNABLE_ROLES: [&str; 3] = ["admin", "accountant", "viewer"];
 
 pub fn is_valid_role(role: &str) -> bool {
     ASSIGNABLE_ROLES.contains(&role)
